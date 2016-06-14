@@ -2,13 +2,15 @@
 
 const axios = require('axios');
 const env = require('node-env-file');
+env('./prod.env');
+
 const inflection = require('inflection');
 const AWS = require('aws-sdk');
 const unmarshalJson = require('dynamodb-marshaler').unmarshalJson;
-
 const canMyDogRegex = /can my dog eat (.*)\?/i;
+const facebookUrl =
+  `https://graph.facebook.com/v2.6/me/messages?access_token=${process.env.FACEBOOK_PAGE_ACCESS_TOKEN}`;
 
-env('./prod.env');
 
 AWS.config.update({
   accessKeyId: process.env.AWS_LAMBDA_ACCESS_KEY_ID,
@@ -17,9 +19,7 @@ AWS.config.update({
 });
 
 const db  = new AWS.DynamoDB();
-
 module.exports.handler = function(event, context, callback) {
-  let accessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
   if (event.method === 'GET') {
     // facebook app verification
     if (event.hubVerifyToken === process.env.HUB_VERIFY_TOKEN && event.hubChallenge) {
@@ -44,53 +44,49 @@ module.exports.handler = function(event, context, callback) {
               db.getItem(params, (err, data) => {
                 if (err) console.log(err, err.stack);
                 else {
-                  if (data.Item) {
-                    let item = JSON.parse(unmarshalJson(data.Item));
-                    let answer = 'No!';
-                    if (item.answer) { answer = 'Yes, don’t worry.'; }
-                    message = `${answer} ${item.body}`;
-                  } else {
-                    message = 'Hmm...not sure. I’ve never been asked that before. ' +
-                      'I’ll do some research and let you know.';
-                  }
-
-                  let payload = {
-                    recipient: {
-                      id: messagingItem.sender.id
-                    },
-                    message: {
-                      text: message
-                    }
-                  };
-
-                  let url = `https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`;
-                  axios.post(url, payload)
-                    .then((response) => {
-                      return callback(null, response);
-                    });
-
+                  replyAboutFood(data, messagingItem.sender.id);
                 }
               });
             }
           } else {
-            let payload = {
+            sendMessageToFacebook({
               recipient: {
                 id: messagingItem.sender.id
               },
               message: {
                 text: message
               }
-            };
-
-            let url = `https://graph.facebook.com/v2.6/me/messages?access_token=${accessToken}`;
-
-            axios.post(url, payload)
-              .then((response) => {
-                return callback(null, response);
-              });
+            });
           }
         }
       });
     });
   }
+};
+
+let sendMessageToFacebook = (payload) => {
+  axios.post(facebookUrl, payload)
+    .then((response) => {
+      return callback(null, response);
+    });
+  console.log(payload);
+};
+
+let replyAboutFood = (data, senderId) => {
+  let message = 'Hmm...not sure. I’ve never been asked that before. ' +
+    'I’ll do some research and let you know.';
+  if (data.Item) {
+    let item = JSON.parse(unmarshalJson(data.Item));
+    let answer = 'No!';
+    if (item.answer) { answer = 'Yes, don’t worry.'; }
+    message = `${answer} ${item.body}`;
+  }
+  sendMessageToFacebook({
+    recipient: {
+      id: senderId
+    },
+    message: {
+      text: message
+    }
+  });
 };
