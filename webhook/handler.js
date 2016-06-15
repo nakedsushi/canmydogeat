@@ -77,7 +77,12 @@ let replyAboutFood = (data, senderId) => {
   if (data.Item) {
     let item = JSON.parse(unmarshalJson(data.Item));
     let answer = 'No!';
-    if (item.answer) { answer = 'Yes'; }
+    let imageUrl= 'http://67.media.tumblr.com/tumblr_m8s4re8wNP1qhiwsqo1_400.jpg';
+
+    if (item.answer) {
+      answer = 'Yes';
+      imageUrl = 'https://c1.staticflickr.com/1/4/4337807_47390a6754_z.jpg';
+    }
     message = {
       attachment: {
         type: 'template',
@@ -85,7 +90,15 @@ let replyAboutFood = (data, senderId) => {
           template_type: 'generic',
           elements: [{
             title: answer,
-            subtitle: item.body
+            subtitle: item.body,
+            image_url: imageUrl,
+            buttons:[
+              {
+                type: 'web_url',
+                url: item.url,
+                title: 'More Info'
+              }
+            ]
           }]
         }
       }
