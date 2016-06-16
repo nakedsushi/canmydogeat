@@ -55,7 +55,7 @@ const replyAboutFood = (data, senderId) => {
     recipient: {
       id: senderId
     },
-    message: message
+    message: {text: message}
   });
 };
 

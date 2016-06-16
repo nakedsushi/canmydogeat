@@ -27,7 +27,7 @@ module.exports.handler = (event, context, callback) => {
     event.payload.entry.map((entry) => {
       entry.messaging.map((messagingItem) => {
         if (messagingItem.message && messagingItem.message.text) {
-          let message = 'Hi! To ask if it’s ok for your dog to eat something, ask it like: ' +
+          let message = 'Sorry, English isn’t my first language. Can you ask me in a simpler way like: ' +
             'Can my dog eat bananas?';
           let food = undefined;
           if (parser.isWellFormedQuestion(messagingItem.message.text)) {
