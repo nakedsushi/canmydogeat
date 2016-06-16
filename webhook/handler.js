@@ -5,7 +5,7 @@ env('./prod.env');
 
 const inflection = require('inflection');
 const canMyDogRegex = /can my dog eat (.*)\?/i;
-const messaging = require('./messaging.js');
+const messenger = require('./messenger.js');
 const AWS = require('aws-sdk');
 AWS.config.update({
   accessKeyId: process.env.AWS_LAMBDA_ACCESS_KEY_ID,
@@ -38,12 +38,12 @@ module.exports.handler = (event, context, callback) => {
               db.getItem(params, (err, data) => {
                 if (err) console.log(err, err.stack);
                 else {
-                  messaging.replyAboutFood(data, messagingItem.sender.id);
+                  messenger.replyAboutFood(data, messagingItem.sender.id);
                 }
               });
             }
           } else {
-            messaging.sendMessageToFacebook({
+            messenger.sendMessageToFacebook({
               recipient: {
                 id: messagingItem.sender.id
               },
