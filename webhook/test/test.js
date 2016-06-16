@@ -7,7 +7,7 @@ const handler = require('../handler.js').handler;
 const messenger = require('../messenger.js');
 const parser = require('../parser.js');
 
-const cantMatchEvent = require('./cant-match-event.js');
+const cantMatchEvent = require('./not-a-question-event.js');
 const canMyDogEatEvent = require('./can-my-dog-eat-event.js');
 
 chai.use(spies);
@@ -30,10 +30,20 @@ describe('handler', () => {
   });
 
   describe('parser', () => {
-    it('should return a normalized object when a sentence is simple', () => {
-      expect(parser.getObject('can my dog eat bananas?')).to.equal('banana');
-      expect(parser.getObject('Can my dog eat a banana?')).to.equal('banana');
-      expect(parser.getObject('is it ok if my dog eats bananas')).to.equal('banana');
+    describe('getObject', () => {
+      it('should return a normalized object when a string is simple', () => {
+        expect(parser.getObject('can my dog eat bananas?')).to.equal('banana');
+        expect(parser.getObject('Can my dog eat a banana?')).to.equal('banana');
+        expect(parser.getObject('is it ok if my dog eats bananas')).to.equal('banana');
+      });
     });
+    describe('isWellFormedQuestion', () => {
+      it('should return true when string is a question', () => {
+        expect(parser.isWellFormedQuestion('can my dog eat bananas?')).to.be.true;
+      });
+      it('should return false when string is not a question', () => {
+        expect(parser.isWellFormedQuestion('hello!')).to.be.false;
+      });
+    })
   });
 });

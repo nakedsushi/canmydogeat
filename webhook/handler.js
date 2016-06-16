@@ -4,8 +4,8 @@ const env = require('node-env-file');
 env('./prod.env');
 
 const inflection = require('inflection');
-const canMyDogRegex = /can my dog eat (.*)\?/i;
 const messenger = require('./messenger.js');
+const parser = require('./parser.js');
 const AWS = require('aws-sdk');
 AWS.config.update({
   accessKeyId: process.env.AWS_LAMBDA_ACCESS_KEY_ID,
@@ -29,11 +29,9 @@ module.exports.handler = (event, context, callback) => {
         if (messagingItem.message && messagingItem.message.text) {
           let message = 'Hi! To ask if it’s ok for your dog to eat something, ask it like: ' +
             'Can my dog eat bananas?';
-          let matched = undefined;
-          if (matched = messagingItem.message.text.match(canMyDogRegex)) {
-            let food = matched[1];
-            if (food) {
-              food = inflection.singularize(food);
+          let food = undefined;
+          if (parser.isWellFormedQuestion(messagingItem.message.text)) {
+            if (food = parser.getObject(messagingItem.message.text)) {
               let params = {TableName: 'foods_for_dogs', Key: { food: {S: food}}};
               db.getItem(params, (err, data) => {
                 if (err) console.log(err, err.stack);
