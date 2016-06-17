@@ -1,11 +1,10 @@
 'use strict';
 
-const env = require('node-env-file');
-env('./prod.env');
-
-const inflection = require('inflection');
 const messenger = require('./messenger.js');
 const parser = require('./parser.js');
+
+const env = require('node-env-file');
+env('./prod.env');
 const AWS = require('aws-sdk');
 AWS.config.update({
   accessKeyId: process.env.AWS_LAMBDA_ACCESS_KEY_ID,

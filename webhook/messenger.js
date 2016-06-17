@@ -48,7 +48,7 @@ const replyAboutFood = (data, senderId) => {
         }
       };
     } else {
-      message = {text: `${answer} ${item.body}`};
+      message = `${answer} ${item.body}`;
     }
   }
   sendMessageToFacebook({

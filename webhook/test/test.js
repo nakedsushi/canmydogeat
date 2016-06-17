@@ -22,7 +22,7 @@ describe('handler', () => {
           id: cantMatchEvent['payload']['entry'][0]['messaging'][0]['sender']['id']
         },
         message: {
-          text: 'Hi! To ask if it’s ok for your dog to eat something, ask it like: ' +
+          text: 'Sorry, English isn’t my first language. Can you ask me in a simpler way like: ' +
           'Can my dog eat bananas?'
         }
       });
