@@ -13,6 +13,17 @@ AWS.config.update({
 });
 const db  = new AWS.DynamoDB();
 
+const saveToAddList = (senderId, message) => {
+  let params = {TableName: 'foods_to_add', Item: {
+    message: {'S': message},
+    sender: {'N': senderId}
+  }};
+  db.putItem(params, function (err, data){
+    if (err) console.log(err, err.stack);
+    else console.log(data);
+  });
+};
+
 module.exports.handler = (event, context, callback) => {
   if (event.method === 'GET') {
     if (event.hubVerifyToken === process.env.HUB_VERIFY_TOKEN && event.hubChallenge) {
@@ -45,6 +56,7 @@ module.exports.handler = (event, context, callback) => {
                       },
                       message: {text: message}
                     });
+                    saveToAddList(messagingItem.sender.id, messagingItem.message.text);
                   }
                 }
               });
