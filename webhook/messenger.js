@@ -15,9 +15,8 @@ const sendMessageToFacebook = (payload) => {
 };
 
 const replyAboutFood = (data, senderId) => {
-  let message = 'Hmm...not sure. I’ve never been asked that before. ' +
-    'I’ll do some research and let you know.';
   if (data.Item) {
+    let message = null;
     let item = JSON.parse(unmarshalJson(data.Item));
     let answer = 'No!';
     let imageUrl = 'http://67.media.tumblr.com/tumblr_m8s4re8wNP1qhiwsqo1_400.jpg';
@@ -47,16 +46,24 @@ const replyAboutFood = (data, senderId) => {
           }
         }
       };
+      sendMessageToFacebook({
+        recipient: {
+          id: senderId
+        },
+        message: message
+      });
     } else {
-      message = `${answer} ${item.body}`;
+      sendMessageToFacebook({
+        recipient: {
+          id: senderId
+        },
+        message: {text: `${answer} ${item.body}`}
+      });
     }
+    return true;
+  } else {
+    return false;
   }
-  sendMessageToFacebook({
-    recipient: {
-      id: senderId
-    },
-    message: {text: message}
-  });
 };
 
 module.exports = {

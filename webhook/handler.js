@@ -35,7 +35,17 @@ module.exports.handler = (event, context, callback) => {
               db.getItem(params, (err, data) => {
                 if (err) console.log(err, err.stack);
                 else {
-                  messenger.replyAboutFood(data, messagingItem.sender.id);
+                  let foundFood = messenger.replyAboutFood(data, messagingItem.sender.id);
+                  if (!foundFood) {
+                    message = 'Hmm...not sure. I’ve never been asked that before. ' +
+                      'I’ll do some research and let you know.';
+                    messenger.sendMessageToFacebook({
+                      recipient: {
+                        id: messagingItem.sender.id
+                      },
+                      message: {text: message}
+                    });
+                  }
                 }
               });
             }
