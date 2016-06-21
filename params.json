@@ -1,0 +1,6 @@
+{
+  "name": "Can My Dog Eat _______",
+  "tagline": "Messenger chat bot that answers your \"Can my dog eat _____\" questions.",
+  "body": "### Dogs eat everything, but should they?\r\nDogs don't have the most discerning appetites but there are so many things that they shouldn't eat.  It's hard to keep track of what's going to make your dog sick. We keep track of it so you don't have to.\r\n\r\n\r\n\r\n### Usage\r\nTo ask if your dog can eat something, just ask our chat bot, \"Can my dog eat ______?\"\r\n\r\n### Bug reports & feature requests\r\nCreate a new issue in this repo's issue tracker.",
+  "note": "Don't delete this file! It's used internally to help with page regeneration."
+}
