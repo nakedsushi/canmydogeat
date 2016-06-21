@@ -3,12 +3,12 @@
 const chai = require('chai');
 const spies = require('chai-spies');
 const expect = chai.expect;
+const axios = require('axios');
 const handler = require('../handler.js').handler;
 const messenger = require('../messenger.js');
 const parser = require('../parser.js');
 
 const cantMatchEvent = require('./not-a-question-event.js');
-const canMyDogEatEvent = require('./can-my-dog-eat-event.js');
 
 chai.use(spies);
 
@@ -26,6 +26,45 @@ describe('handler', () => {
           'Can my dog eat bananas?'
         }
       });
+    });
+
+    it('should send one message to facebook if answer is short', () => {
+      let spy = chai.spy.on(axios, 'post');
+      let text = 'here is a short message.';
+      let senderId = '123';
+      let data = { Item:
+        { food: { S: 'cheese' },
+          body: { S: text },
+          answer: { BOOL: true },
+          structured_answer: { BOOL: false } }
+      };
+      messenger.replyAboutFood(data, senderId);
+      expect(spy).to.have.been.called.once.with({
+        recipient: {
+          id: senderId
+        },
+        message: {
+          text: `Yes! ${text}`
+        }
+      });
+    });
+
+    it('should split into two messages to facebook if answer is long', () => {
+      let spy = chai.spy.on(axios, 'post');
+      let text = 'In small to moderate quantities. As long as your dog isn’t lactose intolerant, ' +
+        'which is rare but still possible in canines, cheese can be a great treat. Many cheeses can be ' +
+        'high in fat, so go for low-fat varieties like cottage cheese or mozzarella. in small to ' +
+        'moderate quantities. As long as your dog isn’t lactose intolerant, which is rare but still ' +
+        'possible in canines, cheese can be a great treat.';
+      let senderId = '123';
+      let data = { Item:
+      { food: { S: 'cheese' },
+        body: { S: text },
+        answer: { BOOL: true },
+        structured_answer: { BOOL: false } }
+      };
+      messenger.replyAboutFood(data, senderId);
+      expect(spy).to.have.been.called.exactly(6);
     });
   });
 
