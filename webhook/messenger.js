@@ -4,6 +4,9 @@ const axios = require('axios');
 const unmarshalJson = require('dynamodb-marshaler').unmarshalJson;
 const env = require('node-env-file');
 env('./prod.env');
+const google = require('google');
+google.resultsPerPage = 10;
+
 const facebookUrl =
   `https://graph.facebook.com/v2.6/me/messages?access_token=${process.env.FACEBOOK_PAGE_ACCESS_TOKEN}`;
 
@@ -82,7 +85,51 @@ const replyAboutFood = (data, senderId) => {
   }
 };
 
+const googleFoodAndMessageUser = (food, senderId) => {
+  const query = `can dogs eat ${food}?`;
+  let buttons = [];
+  let message;
+  let maxButtonsInMessage = 3;
+  let savedUrl = {};
+
+  google(query, (err, results) => {
+    if (err) console.error(err);
+    results.links.forEach((link) => {
+      if (link.href && link.title) {
+        if (!savedUrl[link.href]) {
+          buttons.push({
+            title: link.title,
+            url: link.href,
+            type: 'web_url'
+          });
+          savedUrl[link.href] = true;
+        }
+
+        if (buttons.length === maxButtonsInMessage) {
+          message = {
+            attachment: {
+              type: 'template',
+              payload: {
+                template_type: 'button',
+                text: 'I don’t have an answer yet, but I found a couple of pages you should check out:',
+                buttons: buttons
+              }
+            }
+          };
+          sendMessageToFacebook({
+            recipient: {
+              id: senderId
+            },
+            message: message
+          });
+        }
+      }
+    });
+  });
+};
+
 module.exports = {
   sendMessageToFacebook: sendMessageToFacebook,
-  replyAboutFood: replyAboutFood
+  replyAboutFood: replyAboutFood,
+  googleFoodAndMessageUser: googleFoodAndMessageUser
 };

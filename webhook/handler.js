@@ -48,8 +48,8 @@ module.exports.handler = (event, context, callback) => {
                 else {
                   let foundFood = messenger.replyAboutFood(data, messagingItem.sender.id);
                   if (!foundFood) {
-                    message = 'Hmm...not sure. I’ve never been asked that before. ' +
-                      'I’ll do some research and let you know.';
+                    message = 'I’ve never thought about that before. ' +
+                      'Let me do some Googling and let you know if I find anything. Hold on.';
                     messenger.sendMessageToFacebook({
                       recipient: {
                         id: messagingItem.sender.id
@@ -57,6 +57,7 @@ module.exports.handler = (event, context, callback) => {
                       message: {text: message}
                     });
                     saveToAddList(messagingItem.sender.id, messagingItem.message.text);
+                    messenger.googleFoodAndMessageUser(food, messagingItem.sender.id);
                   }
                 }
               });
