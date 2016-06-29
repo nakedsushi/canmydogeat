@@ -1,5 +1,6 @@
 'use strict';
 const nlp = require('nlp_compromise');
+const dogSpeakRegex = /(woof|bow(-| )?wow)/gi;
 
 const getObject = (str) => {
   let terms = nlp.text(str).terms();
@@ -10,7 +11,12 @@ const isWellFormedQuestion = (str) => {
   return nlp.sentence(str).sentence_type() === 'interrogative';
 };
 
+const isDogSpeak = (str) => {
+  return Boolean(str.match(dogSpeakRegex));
+};
+
 module.exports = {
   getObject: getObject,
-  isWellFormedQuestion: isWellFormedQuestion
+  isWellFormedQuestion: isWellFormedQuestion,
+  isDogSpeak: isDogSpeak
 };

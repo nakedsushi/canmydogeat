@@ -37,7 +37,7 @@ module.exports.handler = (event, context, callback) => {
     event.payload.entry.map((entry) => {
       entry.messaging.map((messagingItem) => {
         if (messagingItem.message && messagingItem.message.text) {
-          let message = 'Sorry, English isn’t my first language. Can you ask me in a simpler way like: ' +
+          let message = 'Sorry, English isn’t my first language. Can you ask me in a simpler way with a question mark (?) like: ' +
             'Can my dog eat bananas?';
           let food = undefined;
           if (parser.isWellFormedQuestion(messagingItem.message.text)) {

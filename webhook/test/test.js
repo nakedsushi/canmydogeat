@@ -22,7 +22,7 @@ describe('handler', () => {
           id: cantMatchEvent['payload']['entry'][0]['messaging'][0]['sender']['id']
         },
         message: {
-          text: 'Sorry, English isn’t my first language. Can you ask me in a simpler way like: ' +
+          text: 'Sorry, English isn’t my first language. Can you ask me in a simpler way with a question mark (?) like: ' +
           'Can my dog eat bananas?'
         }
       });
@@ -83,6 +83,23 @@ describe('handler', () => {
       it('should return false when string is not a question', () => {
         expect(parser.isWellFormedQuestion('hello!')).to.be.false;
       });
-    })
+    });
+    describe('isDogSpeak', () => {
+      it('should return true when woof', () => {
+        const dogPhrases = [
+          'woof',
+          'bow wow',
+          'bow-wow',
+          'bowwow'
+        ];
+        dogPhrases.forEach((phrase) => {
+          expect(parser.isDogSpeak(phrase)).to.be.true;
+        });
+      });
+
+      it('should return false if not in dog speak', () => {
+        expect(parser.isDogSpeak('not in dog speak')).to.be.false;
+      });
+    });
   });
 });
