@@ -61,6 +61,15 @@ module.exports.handler = (event, context, callback) => {
                 }
               });
             }
+          } else if (parser.isDogSpeak(messagingItem.message.text)) {
+            messenger.sendMessageToFacebook({
+              recipient: {
+                id: messagingItem.sender.id
+              },
+              message: {
+                text: 'woof woof!'
+              }
+            });
           } else {
             messenger.sendMessageToFacebook({
               recipient: {

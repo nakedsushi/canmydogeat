@@ -1,6 +1,6 @@
 'use strict';
 const nlp = require('nlp_compromise');
-const dogSpeakRegex = /(woof|bow(-| )?wow)/gi;
+const dogSpeakRegex = /(woof|bow(-| )?wow|arf)/gi;
 
 const getObject = (str) => {
   let terms = nlp.text(str).terms();
