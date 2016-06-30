@@ -24,6 +24,14 @@ const saveToAddList = (senderId, message) => {
   });
 };
 
+const queryFood = (food) => {
+  let params = {TableName: 'foods_for_dogs', Key: { food: {S: food}}};
+  db.getItem(params, (err, data) => {
+    if (err) console.log(err, err.stack);
+    console.log(data.Item);
+  });
+};
+
 module.exports.handler = (event, context, callback) => {
   if (event.method === 'GET') {
     if (event.hubVerifyToken === process.env.HUB_VERIFY_TOKEN && event.hubChallenge) {
@@ -68,9 +76,19 @@ module.exports.handler = (event, context, callback) => {
                 id: messagingItem.sender.id
               },
               message: {
-                text: 'woof woof!'
+                attachment: {
+                  type: 'template',
+                  payload: {
+                    template_type: 'generic',
+                    elements: [{
+                      title: 'woof woof',
+                      subtitle: 'arf arf arf arf bow wow arf!',
+                      image_url: 'https://upload.wikimedia.org/wikipedia/en/5/5f/Original_Doge_meme.jpg'
+                    }]
+                  }
+                }
               }
-            });
+          });
           } else {
             messenger.sendMessageToFacebook({
               recipient: {
