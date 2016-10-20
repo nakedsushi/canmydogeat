@@ -24,6 +24,21 @@ const saveToAddList = (senderId, message) => {
   });
 };
 
+const saveToFoodList = (data) => {
+  let params = {
+    TableName: 'foods_for_dogs',
+    Item: {
+      food: {'S': data.food},
+      answer: {'BOOL': data.boolean},
+      body: {'S': data.body}
+    }
+  };
+  db.putItem(params, (err, data) => {
+    if (err) console.log(err, err.stack);
+    else console.log(data);
+  });
+};
+
 const queryFood = (food) => {
   let params = {TableName: 'foods_for_dogs', Key: { food: {S: food}}};
   db.getItem(params, (err, data) => {
